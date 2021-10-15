@@ -17,15 +17,11 @@ const mouse = {
 canvas.addEventListener('click', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
-    drawCircle();
-
 });
 
 canvas.addEventListener('mousemove', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
-    drawCircle();
-
 });
 
 
@@ -38,4 +34,13 @@ function drawCircle() {
     ctx.fill();
     ctx.stroke();
 }
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawCircle();
+
+    requestAnimationFrame(animate);
+}
+
+animate();
 
