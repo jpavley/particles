@@ -18,24 +18,34 @@ const mouse = {
 };
 
 class Focus {
-    constructor() {
+    constructor(speedX, speedY) {
         this.x = canvas.width/2;
         this.y = canvas.height/2;
-        this.speedX = Math.random() * 3 - 1.5;
-        this.speedY = Math.random() * 3 - 1.5;
+        this.speedX = speedX;
+        this.speedY = speedY;
     }
 
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
 
+        let hit = false;
+
         if (this.x < 0 || this.x > canvas.width) {
-            this.speedX *= -1;
+            this.speedX *= -1; // bounce off horizontal walls
+            hit = true;
         }
 
         if (this.y < 0 || this.y > canvas.height) {
-            this.speedY *= -1;
+            this.speedY *= -1; // bounce off vertical walls
+            hit = true;
         }
+
+        
+        if (hit) {
+            hue += 40;
+        }
+        particleArray.push(new Particle(this.x, this.y));
     }
 
     draw() {
@@ -49,10 +59,9 @@ class Particle {
         this.x = x;
         this.y = y;
         this.size = Math.random() * 16 + 1; // random number between 1 and 16
-        this.speedX = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
-        this.speedY = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
+        this.speedX = Math.random() * 5 - 2.5; // random number between -1.5 and +1.5
+        this.speedY = Math.random() * 5 - 2.5; // random number between -1.5 and +1.5
         this.color = 'hsl(' + hue + ', 100%, 50%)';
-
     }
 
     update() {
@@ -71,12 +80,6 @@ class Particle {
     }
 }
 
-// function init() {
-//     for (let i = 0; i < 100; i++) {
-//         particleArray.push(new Particle());
-//     }
-// }
-
 function handleParticles() {
     for (let i = 0; i < particleArray.length; i++) {
         particleArray[i].update();
@@ -88,7 +91,7 @@ function handleParticles() {
             const dx = particleArray[i].x - particleArray[j].x;
             const dy = particleArray[i].y - particleArray[j].y;
             const hypotenuse = Math.sqrt(dx * dx + dy * dy);
-            if (hypotenuse < 100) {
+            if (hypotenuse < 75) {
                 ctx.beginPath();
                 ctx.strokeStyle = particleArray[i].color;
                 ctx.lineWidth = 0.2;
@@ -101,23 +104,28 @@ function handleParticles() {
 
         if (particleArray[i].size <= 0.3) {
             particleArray.splice(i, 1);
-            console.log(particleArray.length);
+            //console.log(particleArray.length);
             i--;
         }
     }
 }
-const focus = new Focus();
+const focus = new Focus(-1.8, 2.3);
+const focus2 = new Focus(1.8, -2.3);
+const focus3 = new Focus(-1.8, -2.3);
+const focus4 = new Focus(1.8, 2.3);
+
+
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     focus.update();
-    focus.draw();
+    focus2.update();
+    focus3.update();
+    focus4.update();
+    //focus.draw();
 
-    // ctx.fillStyle = 'rgba(0,0,0,0.02';
-    // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    //handleParticles();
-    hue += 2;
+    handleParticles();
+    //hue += 2;
     requestAnimationFrame(animate);
 }
 
