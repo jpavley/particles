@@ -5,6 +5,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const particleArray = [];
+let hue = 0;
 
 window.addEventListener('resize', function() {
     canvas.width = window.innerWidth;
@@ -43,6 +44,8 @@ class Particle {
         this.size = Math.random() * 16 + 1; // random number between 1 and 16
         this.speedX = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
         this.speedY = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
+        this.color = 'hsl(' + hue + ', 100%, 50%)';
+
     }
 
     update() {
@@ -54,7 +57,7 @@ class Particle {
     }
 
     draw() {
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -85,6 +88,7 @@ function animate() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     handleParticles();
+    hue++;
     requestAnimationFrame(animate);
 }
 
