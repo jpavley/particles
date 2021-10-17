@@ -8,7 +8,7 @@ const particleArray = [];
 
 window.addEventListener('resize', function() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;ctx.fillStyle = 'white';
+    canvas.height = window.innerHeight;
 });
 
 const mouse = {
@@ -28,6 +28,10 @@ canvas.addEventListener('click', function(event) {
 canvas.addEventListener('mousemove', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
+
+    for (let i = 0; i < 5; i++) {
+        particleArray.push(new Particle());
+    }
 });
 
 class Particle {
@@ -50,7 +54,7 @@ class Particle {
     }
 
     draw() {
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -75,7 +79,11 @@ function handleParticles() {
 }
 
 function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.02';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     handleParticles();
     requestAnimationFrame(animate);
 }
