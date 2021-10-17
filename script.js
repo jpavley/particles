@@ -82,10 +82,11 @@ function handleParticles() {
             if (hypotenuse < 100) {
                 ctx.beginPath();
                 ctx.strokeStyle = particleArray[i].color;
-                ctx.lineWidth = particleArray[i].size;
+                ctx.lineWidth = 0.2;
                 ctx.moveTo(particleArray[i].x, particleArray[i].y);
                 ctx.lineTo(particleArray[j].x, particleArray[j].y);
                 ctx.stroke();
+                ctx.closePath();
             }
         }
 
