@@ -17,28 +17,37 @@ const mouse = {
     y: undefined
 };
 
-canvas.addEventListener('click', function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
+class Focus {
+    constructor() {
+        this.x = canvas.width/2;
+        this.y = canvas.height/2;
+        this.speedX = Math.random() * 3 - 1.5;
+        this.speedY = Math.random() * 3 - 1.5;
+    }
 
-    // for (let i = 0; i < 10; i++) {
-        particleArray.push(new Particle());
-    // }
-});
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
 
-canvas.addEventListener('mousemove', function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
+        if (this.x < 0 || this.x > canvas.width) {
+            this.speedX *= -1;
+        }
 
-    // for (let i = 0; i < 5; i++) {
-        particleArray.push(new Particle());
-    // }
-});
+        if (this.y < 0 || this.y > canvas.height) {
+            this.speedY *= -1;
+        }
+    }
+
+    draw() {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(this.x, this.y, 2, 2);
+    }
+}
 
 class Particle {
-    constructor() {
-        this.x = mouse.x;
-        this.y = mouse.y;
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
         this.size = Math.random() * 16 + 1; // random number between 1 and 16
         this.speedX = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
         this.speedY = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
@@ -97,18 +106,20 @@ function handleParticles() {
         }
     }
 }
-
+const focus = new Focus();
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    focus.update();
+    focus.draw();
 
     // ctx.fillStyle = 'rgba(0,0,0,0.02';
     // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    handleParticles();
+    //handleParticles();
     hue += 2;
     requestAnimationFrame(animate);
 }
 
-// init();
 animate();
 
