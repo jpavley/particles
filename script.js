@@ -21,26 +21,24 @@ canvas.addEventListener('click', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
 
-    for (let i = 0; i < 10; i++) {
+    // for (let i = 0; i < 10; i++) {
         particleArray.push(new Particle());
-    }
+    // }
 });
 
 canvas.addEventListener('mousemove', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
 
-    for (let i = 0; i < 5; i++) {
+    // for (let i = 0; i < 5; i++) {
         particleArray.push(new Particle());
-    }
+    // }
 });
 
 class Particle {
     constructor() {
         this.x = mouse.x;
         this.y = mouse.y;
-        // this.x = Math.random() * canvas.width;
-        // this.y = Math.random() * canvas.height;
         this.size = Math.random() * 16 + 1; // random number between 1 and 16
         this.speedX = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
         this.speedY = Math.random() * 3 - 1.5; // random number between -1.5 and +1.5
@@ -74,21 +72,39 @@ function handleParticles() {
     for (let i = 0; i < particleArray.length; i++) {
         particleArray[i].update();
         particleArray[i].draw();
+
+        for (let j = i; j < particleArray.length; j++) {
+            // use the pythagorean theorem to calc distance between two particles
+            // a^2 + b^2 = c^2 (width squared + height squared = hypotenuse squared)
+            const dx = particleArray[i].x - particleArray[j].x;
+            const dy = particleArray[i].y - particleArray[j].y;
+            const hypotenuse = Math.sqrt(dx * dx + dy * dy);
+            if (hypotenuse < 100) {
+                ctx.beginPath();
+                ctx.strokeStyle = particleArray[i].color;
+                ctx.lineWidth = particleArray[i].size;
+                ctx.moveTo(particleArray[i].x, particleArray[i].y);
+                ctx.lineTo(particleArray[j].x, particleArray[j].y);
+                ctx.stroke();
+            }
+        }
+
         if (particleArray[i].size <= 0.3) {
             particleArray.splice(i, 1);
+            console.log(particleArray.length);
             i--;
         }
     }
 }
 
 function animate() {
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.02';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // ctx.fillStyle = 'rgba(0,0,0,0.02';
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     handleParticles();
-    hue += 0.5;
+    hue += 2;
     requestAnimationFrame(animate);
 }
 
