@@ -88,7 +88,7 @@ function animate() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     handleParticles();
-    hue++;
+    hue += 0.5;
     requestAnimationFrame(animate);
 }
 
