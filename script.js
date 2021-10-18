@@ -18,6 +18,30 @@ const mouse = {
     y: undefined
 };
 
+class Game {
+    constructor() {
+        this.canvas = document.getElementById('canvas1');
+        this.ctx = canvas.getContext('2d');
+        
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        
+        this.particleArray = [];
+        this.focusArray = [];
+        this.hue = 0;
+        this.lastTime = 1;
+        this.deltaTime = 0;      
+    }
+
+    update() {
+
+    }
+
+    draw() {
+
+    }
+}
+
 class Focus {
     constructor(speedX, speedY) {
         this.x = canvas.width/2;
