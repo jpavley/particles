@@ -6,6 +6,7 @@ canvas.height = window.innerHeight;
 
 const particleArray = [];
 let hue = 0;
+let lastTime = 1;
 
 window.addEventListener('resize', function() {
     canvas.width = window.innerWidth;
@@ -25,9 +26,9 @@ class Focus {
         this.speedY = speedY;
     }
 
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+    update(deltaTime) {
+        this.x += this.speedX * deltaTime;
+        this.y += this.speedY * deltaTime;
 
         let hit = false;
 
@@ -48,7 +49,7 @@ class Focus {
         particleArray.push(new Particle(this.x, this.y));
     }
 
-    draw() {
+    draw(deltaTime) {
         ctx.fillStyle = 'white';
         ctx.fillRect(this.x, this.y, 2, 2);
     }
@@ -59,20 +60,20 @@ class Particle {
         this.x = x;
         this.y = y;
         this.size = Math.random() * 16 + 1; // random number between 1 and 16
-        this.speedX = Math.random() * 5 - 2.5; // random number between -1.5 and +1.5
-        this.speedY = Math.random() * 5 - 2.5; // random number between -1.5 and +1.5
+        this.speedX = Math.random() * 0.25 - 0.125;
+        this.speedY = Math.random() * 0.25 - 0.125;
         this.color = 'hsl(' + hue + ', 100%, 50%)';
     }
 
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+    update(deltaTime) {
+        this.x += this.speedX * deltaTime;
+        this.y += this.speedY * deltaTime;
         if (this.size > 0.2) {
             this.size -= 0.1;
         }
     }
 
-    draw() {
+    draw(deltaTime) {
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -80,11 +81,12 @@ class Particle {
     }
 }
 
-function handleParticles() {
+function handleParticles(deltaTime) {
     for (let i = 0; i < particleArray.length; i++) {
-        particleArray[i].update();
-        particleArray[i].draw();
+        particleArray[i].update(deltaTime);
+        particleArray[i].draw(deltaTime);
 
+        // draw lines between particles that are near each other.
         for (let j = i; j < particleArray.length; j++) {
             // use the pythagorean theorem to calc distance between two particles
             // a^2 + b^2 = c^2 (width squared + height squared = hypotenuse squared)
@@ -109,25 +111,32 @@ function handleParticles() {
         }
     }
 }
-const focus = new Focus(-1.8, 2.3);
-const focus2 = new Focus(1.8, -2.3);
-const focus3 = new Focus(-1.8, -2.3);
-const focus4 = new Focus(1.8, 2.3);
+
+const focus = new Focus(-0.25, 0.25);
+const focus2 = new Focus(0.25, -0.25);
+const focus3 = new Focus(-0.25, -0.25);
+const focus4 = new Focus(0.20, 0.25);
 
 
-function animate() {
+function animate(timeStamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    focus.update();
-    focus2.update();
-    focus3.update();
-    focus4.update();
-    //focus.draw();
+    // deltaTime: elapsed time between frames
+    // faster computer, small value for deltaTime
+    // slower computer, larger value for deltaTime
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
 
-    handleParticles();
-    //hue += 2;
+    focus.update(deltaTime);
+    focus2.update(deltaTime);
+    focus3.update(deltaTime);
+    focus4.update(deltaTime);
+    //focus.draw(deltaTime);
+
+    handleParticles(deltaTime);
     requestAnimationFrame(animate);
 }
 
-animate();
+// Startup
+animate(0);
 
