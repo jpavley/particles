@@ -6,7 +6,6 @@ canvas.height = window.innerHeight;
 
 const particleArray = [];
 let hue = 0;
-let lastTime = 1;
 
 window.addEventListener('resize', function() {
     canvas.width = window.innerWidth;
@@ -27,25 +26,33 @@ class Game {
         this.canvas.height = window.innerHeight;
         
         this.particleArray = [];
-        this.focusArray = [];
+        this.focusArray = [
+            new Focus(this.ctx, this.canvas.width, this.canvas.height, -0.25, 0.25),
+            new Focus(this.ctx, this.canvas.width, this.canvas.height, 0.25, -0.25),
+            new Focus(this.ctx, this.canvas.width, this.canvas.height, -0.25, -0.25),
+            new Focus(this.ctx, this.canvas.width, this.canvas.height, 0.20, 0.25)
+        ];
+
+        //console.log(this.focusArray);
+
         this.hue = 0;
         this.lastTime = 1;
-        this.deltaTime = 0;      
     }
 
-    update() {
-
+    update(deltaTime) {
+        this.focusArray.forEach(object => object.update(deltaTime));
     }
 
     draw() {
-
+        this.focusArray.forEach(object => object.draw(this.ctx));
     }
 }
 
 class Focus {
-    constructor(speedX, speedY) {
-        this.x = canvas.width/2;
-        this.y = canvas.height/2;
+    constructor(ctx, width, height, speedX, speedY) {
+        this.ctx = ctx;
+        this.x = width/2;
+        this.y = height/2;
         this.speedX = speedX;
         this.speedY = speedY;
     }
@@ -56,12 +63,12 @@ class Focus {
 
         let hit = false;
 
-        if (this.x < 0 || this.x > canvas.width) {
+        if (this.x < 0 || this.x > this.width) {
             this.speedX *= -1; // bounce off horizontal walls
             hit = true;
         }
 
-        if (this.y < 0 || this.y > canvas.height) {
+        if (this.y < 0 || this.y > this.height) {
             this.speedY *= -1; // bounce off vertical walls
             hit = true;
         }
@@ -71,11 +78,13 @@ class Focus {
             hue += 40;
         }
         particleArray.push(new Particle(this.x, this.y));
+        //console.log(particleArray);
     }
 
-    draw(deltaTime) {
+    draw(ctx) {
         ctx.fillStyle = 'white';
-        ctx.fillRect(this.x, this.y, 2, 2);
+        ctx.fillRect(this.x, this.y, 10, 10);
+        //console.log(this.x);
     }
 }
 
@@ -97,7 +106,7 @@ class Particle {
         }
     }
 
-    draw(deltaTime) {
+    draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -105,10 +114,10 @@ class Particle {
     }
 }
 
-function handleParticles(deltaTime) {
+function handleParticles(deltaTime, ctx) {
     for (let i = 0; i < particleArray.length; i++) {
         particleArray[i].update(deltaTime);
-        particleArray[i].draw(deltaTime);
+        particleArray[i].draw(ctx);
 
         // draw lines between particles that are near each other.
         for (let j = i; j < particleArray.length; j++) {
@@ -130,37 +139,30 @@ function handleParticles(deltaTime) {
 
         if (particleArray[i].size <= 0.3) {
             particleArray.splice(i, 1);
-            //console.log(particleArray.length);
+            console.log(particleArray.length);
             i--;
         }
     }
 }
 
-const focus = new Focus(-0.25, 0.25);
-const focus2 = new Focus(0.25, -0.25);
-const focus3 = new Focus(-0.25, -0.25);
-const focus4 = new Focus(0.20, 0.25);
-
-
 function animate(timeStamp) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    game.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // deltaTime: elapsed time between frames
     // faster computer, small value for deltaTime
     // slower computer, larger value for deltaTime
-    const deltaTime = timeStamp - lastTime;
-    lastTime = timeStamp;
+    const deltaTime = timeStamp - game.lastTime;
+    game.lastTime = timeStamp;
 
-    focus.update(deltaTime);
-    focus2.update(deltaTime);
-    focus3.update(deltaTime);
-    focus4.update(deltaTime);
-    //focus.draw(deltaTime);
+    game.update(deltaTime);
+    game.draw();
 
-    handleParticles(deltaTime);
+    handleParticles(deltaTime, game.ctx);
+
     requestAnimationFrame(animate);
 }
 
 // Startup
+const game = new Game();
 animate(0);
 
