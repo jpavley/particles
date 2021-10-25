@@ -44,13 +44,15 @@ class Game {
     }
 
     draw() {
-        this.focusArray.forEach(object => object.draw(this.ctx));
+        //this.focusArray.forEach(object => object.draw(this.ctx));
     }
 }
 
 class Focus {
     constructor(ctx, width, height, speedX, speedY) {
         this.ctx = ctx;
+        this.width = width;
+        this.height = height;
         this.x = width/2;
         this.y = height/2;
         this.speedX = speedX;
@@ -139,7 +141,7 @@ function handleParticles(deltaTime, ctx) {
 
         if (particleArray[i].size <= 0.3) {
             particleArray.splice(i, 1);
-            console.log(particleArray.length);
+            //console.log(particleArray.length);
             i--;
         }
     }
