@@ -51,8 +51,8 @@ class Game {
 class Focus {
     constructor(ctx, width, height, speedX, speedY) {
         this.ctx = ctx;
-        this.width = width;
-        this.height = height;
+        this.canvasWidth = width;
+        this.canvasHeight = height;
         this.x = width/2;
         this.y = height/2;
         this.speedX = speedX;
@@ -65,12 +65,12 @@ class Focus {
 
         let hit = false;
 
-        if (this.x < 0 || this.x > this.width) {
+        if (this.x < 0 || this.x > this.canvasWidth) {
             this.speedX *= -1; // bounce off horizontal walls
             hit = true;
         }
 
-        if (this.y < 0 || this.y > this.height) {
+        if (this.y < 0 || this.y > this.canvasHeight) {
             this.speedY *= -1; // bounce off vertical walls
             hit = true;
         }
@@ -116,6 +116,25 @@ class Particle {
     }
 }
 
+function calcHypotenuse(aX, aY, bX, bY) {
+    // use the pythagorean theorem to calc distance between two particles
+    // a^2 + b^2 = c^2 (width squared + height squared = hypotenuse squared)
+    const dx = aX - bX;
+    const dy = aY - bY;
+    const hypotenuse = Math.sqrt((dx ** 2) + (dy ** 2));
+    return hypotenuse;
+}
+
+function drawEdge(ctx, c, aX, aY, bX, bY) {
+    ctx.beginPath();
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 0.2;
+    ctx.moveTo(aX, aY);
+    ctx.lineTo(bX, bY);
+    ctx.stroke();
+    ctx.closePath();
+}
+
 function handleParticles(deltaTime, ctx) {
     for (let i = 0; i < particleArray.length; i++) {
         particleArray[i].update(deltaTime);
@@ -123,19 +142,13 @@ function handleParticles(deltaTime, ctx) {
 
         // draw lines between particles that are near each other.
         for (let j = i; j < particleArray.length; j++) {
-            // use the pythagorean theorem to calc distance between two particles
-            // a^2 + b^2 = c^2 (width squared + height squared = hypotenuse squared)
-            const dx = particleArray[i].x - particleArray[j].x;
-            const dy = particleArray[i].y - particleArray[j].y;
-            const hypotenuse = Math.sqrt(dx * dx + dy * dy);
+            const hypotenuse = calcHypotenuse(particleArray[i].x, particleArray[i].y, 
+                                              particleArray[j].x, particleArray[j].y);
+
             if (hypotenuse < 75) {
-                ctx.beginPath();
-                ctx.strokeStyle = particleArray[i].color;
-                ctx.lineWidth = 0.2;
-                ctx.moveTo(particleArray[i].x, particleArray[i].y);
-                ctx.lineTo(particleArray[j].x, particleArray[j].y);
-                ctx.stroke();
-                ctx.closePath();
+                drawEdge(ctx, particleArray[i].color, 
+                              particleArray[i].x, particleArray[i].y, 
+                              particleArray[j].x, particleArray[j].y);
             }
         }
 
